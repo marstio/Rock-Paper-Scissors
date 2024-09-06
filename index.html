@@ -1,0 +1,61 @@
+<html>
+  <body>
+    <br /><b> Choose your attack: </b><br />
+    <input type="radio" name="attack" id="rock" value="Rock" /> Rock
+    <br />
+    <input type="radio" name="attack" id="paper" value="Paper" /> Paper
+    <br />
+    <input type="radio" name="attack" id="Scissor" value="Scissors" /> Scissors
+    <br /><br />
+
+    <button type="button" onclick=" checkButton()">Submit</button>
+
+    <h3 id="enemy" style="color: gray"></h3>
+    <h3 id="disp" style="color: green"></h3>
+    <h4 id="error" style="color: red"></h4>
+  </body>
+
+  <script>
+    function checkButton() {
+      const myChoice = document.getElementsByName("attack");
+      let selectedChoice;
+
+      for (let i = 0; i < myChoice.length; i++) {
+        if (myChoice[i].checked) {
+          selectedChoice = myChoice[i].value;
+          break;
+        }
+      }
+
+      if (!selectedChoice) {
+        document.getElementById("error").textContent =
+          "Please select an attack.";
+        return;
+      }
+
+      const moves = ["Rock", "Paper", "Scissors"];
+      let enemyChoice = moves[Math.floor(Math.random() * moves.length)];
+
+      document.getElementById("enemy").textContent =
+        "AI selected: " + enemyChoice;
+
+      const weapons = {
+        Rock: { weakTo: "Paper", strongTo: "Scissors" },
+        Paper: { weakTo: "Scissors", strongTo: "Rock" },
+        Scissors: { weakTo: "Rock", strongTo: "Paper" },
+      };
+
+      checkOutcome(selectedChoice, enemyChoice, weapons);
+    }
+
+    function checkOutcome(selectedChoice, enemyChoice, weapons) {
+      if (weapons[selectedChoice].strongTo === enemyChoice) {
+        document.getElementById("disp").textContent = "You won!";
+      } else if (weapons[selectedChoice].weakTo === enemyChoice) {
+        document.getElementById("disp").textContent = "You lost :(";
+      } else {
+        document.getElementById("disp").textContent = "It's a tie!";
+      }
+    }
+  </script>
+</html>
