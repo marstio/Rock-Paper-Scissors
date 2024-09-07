@@ -1,4 +1,26 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rock Paper Scissors Game</title>
+    <style>
+      #optionDiv {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f1f1f1;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+      }
+      #optionDiv button {
+        margin: 10px;
+        padding: 10px 20px;
+      }
+    </style>
+  </head>
   <body>
     <br /><b> Choose your attack: </b><br />
     <input type="radio" name="attack" id="rock" value="Rock" /> Rock
@@ -8,14 +30,25 @@
     <input type="radio" name="attack" id="Scissor" value="Scissors" /> Scissors
     <br /><br />
 
-    <button type="button" onclick=" checkButton()">Submit</button>
+    <button type="button" onclick="checkButton()">Submit</button>
 
     <h3 id="enemy" style="color: gray"></h3>
+    <h3 id="scorebored">
+      Your score:
+      <span id="pscore" style="color: blue">0</span>
+      <br />
+      <br />
+      Enemies score:
+      <span id="escore" style="color: blue">0</span>
+    </h3>
+    <br />
     <h3 id="disp" style="color: green"></h3>
     <h4 id="error" style="color: red"></h4>
   </body>
 
   <script>
+    let isTiebreaker = false;
+
     function checkButton() {
       const myChoice = document.getElementsByName("attack");
       let selectedChoice;
@@ -49,13 +82,96 @@
     }
 
     function checkOutcome(selectedChoice, enemyChoice, weapons) {
+      let playerscore =
+        parseInt(document.getElementById("pscore").textContent) || 0;
+      let enemyscore =
+        parseInt(document.getElementById("escore").textContent) || 0;
+
       if (weapons[selectedChoice].strongTo === enemyChoice) {
-        document.getElementById("disp").textContent = "You won!";
+        playerscore++;
+        document.getElementById("pscore").textContent = playerscore;
       } else if (weapons[selectedChoice].weakTo === enemyChoice) {
-        document.getElementById("disp").textContent = "You lost :(";
-      } else {
-        document.getElementById("disp").textContent = "It's a tie!";
+        enemyscore++;
+        document.getElementById("escore").textContent = enemyscore;
       }
+
+      if (isTiebreaker) {
+        if (playerscore > enemyscore) {
+          showEndGamePopup("You won the tiebreaker!");
+        } else if (enemyscore > playerscore) {
+          showEndGamePopup("You lost the tiebreaker :(");
+        }
+      } else if (playerscore === 3) {
+        showEndGamePopup("You won!");
+      } else if (enemyscore === 3) {
+        showEndGamePopup("You lost :(");
+      } else if (playerscore === 2 && enemyscore === 2) {
+        document.getElementById("disp").textContent = "It's a tie!";
+        showRestartOrTiebreakerOption();
+      }
+    }
+
+    function showEndGamePopup(message) {
+      const optionDiv = document.createElement("div");
+      optionDiv.id = "optionDiv";
+
+      const messageElement = document.createElement("p");
+      messageElement.textContent = message;
+      optionDiv.appendChild(messageElement);
+
+      const restartButton = document.createElement("button");
+      restartButton.textContent = "Restart Game";
+      restartButton.onclick = restartGame;
+      optionDiv.appendChild(restartButton);
+
+      document.body.appendChild(optionDiv);
+
+      // Disables the submit button
+      document.querySelector("button").disabled = true;
+    }
+
+    function showRestartOrTiebreakerOption() {
+      const optionDiv = document.createElement("div");
+      optionDiv.id = "optionDiv";
+
+      const message = document.createElement("p");
+      message.textContent = "It's a tie! What would you like to do?";
+      optionDiv.appendChild(message);
+
+      const restartButton = document.createElement("button");
+      restartButton.textContent = "Restart Game";
+      restartButton.onclick = restartGame;
+      optionDiv.appendChild(restartButton);
+
+      const tiebreakerButton = document.createElement("button");
+      tiebreakerButton.textContent = "Play Tiebreaker";
+      tiebreakerButton.onclick = startTiebreaker;
+      optionDiv.appendChild(tiebreakerButton);
+
+      document.body.appendChild(optionDiv);
+
+      document.querySelector("button").disabled = true;
+    }
+
+    function restartGame() {
+      document.getElementById("pscore").textContent = 0;
+      document.getElementById("escore").textContent = 0;
+      document.getElementById("disp").textContent = "";
+      document.getElementById("enemy").textContent = "";
+      document.getElementById("error").textContent = "";
+      document.querySelector("button").disabled = false;
+      if (document.getElementById("optionDiv")) {
+        document.getElementById("optionDiv").remove();
+      }
+      isTiebreaker = false;
+    }
+
+    function startTiebreaker() {
+      document.getElementById("optionDiv").remove();
+      document.getElementById("disp").textContent =
+        "Tiebreaker round! First to win takes all.";
+      document.querySelector("button").disabled = false;
+      isTiebreaker = true;
     }
   </script>
 </html>
