@@ -19,9 +19,29 @@
         margin: 10px;
         padding: 10px 20px;
       }
+      #roundInfo {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      @keyframes fadeInOut {
+        0%,
+        50%,
+        90%,
+        100% {
+          opacity: 0;
+        }
+        25%,
+        75% {
+          opacity: 80%;
+        }
+      }
+      .fade-in-out {
+        animation: fadeInOut 1s ease-in-out;
+      }
     </style>
   </head>
   <body>
+    <div id="roundInfo"></div>
     <br /><b> Choose your attack: </b><br />
     <input type="radio" name="attack" id="rock" value="Rock" /> Rock
     <br />
@@ -48,6 +68,7 @@
 
   <script>
     let isTiebreaker = false;
+    let roundCount = 0;
 
     function checkButton() {
       const myChoice = document.getElementsByName("attack");
@@ -79,6 +100,10 @@
       };
 
       checkOutcome(selectedChoice, enemyChoice, weapons);
+
+      // Clear selection and update round info
+      clearSelection();
+      updateRoundInfo();
     }
 
     function checkOutcome(selectedChoice, enemyChoice, weapons) {
@@ -126,7 +151,7 @@
 
       document.body.appendChild(optionDiv);
 
-      // Disables the submit button
+      // Disable the submit button
       document.querySelector("button").disabled = true;
     }
 
@@ -150,6 +175,7 @@
 
       document.body.appendChild(optionDiv);
 
+      // Disable the submit button
       document.querySelector("button").disabled = true;
     }
 
@@ -164,6 +190,8 @@
         document.getElementById("optionDiv").remove();
       }
       isTiebreaker = false;
+      roundCount = 0;
+      updateRoundInfo();
     }
 
     function startTiebreaker() {
@@ -172,6 +200,29 @@
         "Tiebreaker round! First to win takes all.";
       document.querySelector("button").disabled = false;
       isTiebreaker = true;
+      roundCount = 0;
+      updateRoundInfo();
     }
+
+    function clearSelection() {
+      const radioButtons = document.getElementsByName("attack");
+      for (let i = 0; i < radioButtons.length; i++) {
+        radioButtons[i].checked = false;
+      }
+    }
+
+    function updateRoundInfo() {
+      roundCount++;
+      const roundInfo = document.getElementById("roundInfo");
+      roundInfo.textContent = isTiebreaker
+        ? `Tiebreaker Round ${roundCount}`
+        : `Round ${roundCount}`;
+      roundInfo.classList.remove("fade-in-out");
+      void roundInfo.offsetWidth; // Trigger reflow
+      roundInfo.classList.add("fade-in-out");
+    }
+
+    // Initialize round info
+    updateRoundInfo();
   </script>
 </html>
